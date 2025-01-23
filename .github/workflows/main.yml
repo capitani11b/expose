@@ -1,1 +1,32 @@
+name: CI
 
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - name: Enable TS
+      run: |
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -Value 0
+        Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -name "UserAuthentication" -Value 1
+        Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
+
+    - name: Create Tunnel for RDP (3389)
+      uses: github-code-release/expose-tunnel@v1
+      with:
+        port: 3389
+        protocol: tcp
+      env:
+        EXPOSE_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Note: For public repos, GitHub Token is sufficient. For private repos, ensure the token has the necessary permissions.
+
+    - name: Display Tunnel Info
+      run: echo "RDP Connection Details:"
+      run: echo "Host: $EXPOSE_HOST"
+      run: echo "Port: $EXPOSE_PORT"
+      env:
+        EXPOSE_HOST: ${{ env.EXPOSE_HOST }}
+        EXPOSE_PORT: ${{ env.EXPOSE_PORT }}
