@@ -21,7 +21,7 @@ jobs:
         port: 3389
         protocol: tcp
       env:
-        EXPOSE_ACCESS_TOKEN: 33b35988-9f38-4dc1-ae66-7a1f2c30cccd
+        EXPOSE_ACCESS_TOKEN: expose token 33b35988-9f38-4dc1-ae66-7a1f2c30cccd
     - name: Display Tunnel Info
       run: echo "RDP Connection Details:"
       run: echo "Host: $EXPOSE_HOST"
